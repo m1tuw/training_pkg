@@ -22,45 +22,32 @@ class Template(object):
         #self.publi.publish(msg)
 
     def callback(self,msg):
+	# all buttons mapping
         a = msg.buttons[0]
 	b = msg.buttons[1]
 	x = msg.buttons[2]
 	y = msg.buttons[3]
 
-	lb, rb = msg.buttons[4], msg.buttons[5]
-
-	rt = msg.axes[5]
-
-	leftjoy_x = -msg.axes[0]
-	leftjoy_y = msg.axes[1]
+	lb = msg.buttons[4]
+	rb = msg.buttons[5]
 
 	rightjoy_x = -msg.axes[3]
 	rightjoy_y = msg.axes[4]
 
-	deadzone = 0.2
-
-        if rt < 0:
-           maxomega = 5
-           maxspeed = 0.3
-        else:
-	   maxomega = 10
-	   maxspeed = 1
+	leftjoy_x = -msg.axes[0]
+	leftjoy_y = msg.axes[1]
 	
-	if abs(leftjoy_x) > deadzone:
-		self.twist.omega = leftjoy_x * maxomega
-	else:
-		self.twist.omega = 0
+        deadzone = 0.1
+	maxomega = 1
+	maxvelocity = 1
 
-	if abs(rightjoy_y) > deadzone:
-		self.twist.v = rightjoy_y * maxspeed
-	else:
-		self.twist.v = 0
-	
-
-# panic button
-	if rb == 1 and lb == 1:
-		self.twist.omega = 0
-		self.twist.v = 0
+        if abs(leftjoy_x) > deadzone:
+		self.twist.omega = leftjoy_x * maxomega  
+        self.twist.v =0
+ # frenar
+        if a == 1:
+            self.twist.omega =-10*x 
+            self.twist.v = 10*y 
         
         self.publi.publish(self.twist)
         

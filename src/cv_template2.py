@@ -38,10 +38,17 @@ class Template(object):
 		image_out = cv2.cvtColor(image, cv2.COLOR_BGR2HSV) 
 
 		#Definir rangos para la mascara
-		
-
-		lower_limit = np.array([25,100,130])
-		upper_limit =np.array([40,255,255])
+				
+                n = 2
+		if n ==0:
+			lower_limit = np.array([25,100,130])
+			upper_limit =np.array([35,255,255])
+			tamanopato= 3.38
+                        
+                elif n ==2:
+ 			lower_limit=np.array([100,220,0])
+			upper_limit=np.array([114,255,255])
+			tamanopato= 6.3
 
 		#Mascara
 		mask = cv2.inRange(image_out, lower_limit, upper_limit)
@@ -53,15 +60,18 @@ class Template(object):
 		# Operaciones morfolgicas, normalmente se utiliza para "limpiar" la mascara
 		kernel = np.ones((5 , 5), np.uint8)
 		img_erode = cv2.erode(mask, kernel, iterations=2) #Erosion
-		img_dilate = cv2.dilate(img_erode, kernel, iterations=3) #Dilatar 
+		img_dilate = cv2.dilate(img_erode, kernel, iterations=3) #Dilatar 	
+		df=101.85916357881302
+		
 
 		# Definir blobs
 		_,contours, hierarchy = cv2.findContours(img_dilate,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 		for cnt in contours:
                         AREA = cv2.contourArea(cnt)
-			if AREA>1000: #Filtrar por tamano de obs
+			if AREA>300: #Filtrar por tamano de obs
 				x,y,w,h = cv2.boundingRect(cnt)
-                                print (h)
+				dp=(tamanopato*df)/h
+				print(dp)
 				cv2.rectangle(image, (x,y), (x+w,y+h), (0,0,255), 2)
 			else:
 				None

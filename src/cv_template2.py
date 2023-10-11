@@ -1,4 +1,4 @@
-a#!/usr/bin/env python
+#!/usr/bin/env python
 
 import rospy #importar ros para python
 from std_msgs.msg import String, Int32 # importar mensajes de ROS tipo String y tipo Int32
@@ -108,7 +108,7 @@ class Template(object):
 		self.pub_img2.publish(maskpub)
 
 def main():
-	rospy.init_node('test') #creacion y registro del nodo!
+	rospy.init_node('nodo_patos') #creacion y registro del nodo!
 
 	obj = Template('args') # Crea un objeto del tipo Template, cuya definicion se encuentra arriba
 

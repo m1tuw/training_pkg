@@ -13,8 +13,8 @@ class Template(object):
         super(Template, self).__init__()
         self.args = args
         #sucribir a joy 
-        self.sub_dist = rospy.Subscriber("distancia", Point, self.callback)
-        self.sub_joy = rospy.Subscriber("/duckiebot/possible_cmd",Twist2DStamped, self.callback)
+        self.sub_joy = message_filters.Subscriber("/duckiebot/possible_cmd",Twist2DStamped)
+        self.sub_dist = message_filters.Subscriber("distancia", Point)
         #publicar la intrucciones del control en possible_cmd
         self.publi = rospy.Publisher("/duckiebot/wheels_driver_node/car_cmd", Twist2DStamped, queue_size = 10)
         self.twist = Twist2DStamped()
@@ -22,18 +22,20 @@ class Template(object):
 	ts = message_filters.TimeSynchronizer([self.sub_dist, self.sub_joy], 10)
 	ts.registerCallback(self.callback)
 
-    #def publicar(self, msg):
-        #self.publi.publish(msg)
-	
-
     def callback(self,msg,dist_node):
 
 	dist = dist_node.x
 	if dist < 15:
 		self.twist.v = 0
+	else:
+		pass
                 
-        self.publi.publish(self.twist)
+        self.publi.publish(self.twist)  
         
+    #def publicar(self, msg):
+        #self.publi.publish(msg)
+	
+
 
 
 def main():

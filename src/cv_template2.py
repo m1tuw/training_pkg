@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+a#!/usr/bin/env python
 
 import rospy #importar ros para python
 from std_msgs.msg import String, Int32 # importar mensajes de ROS tipo String y tipo Int32
@@ -19,7 +19,8 @@ class Template(object):
         #Publicar imagen(es)
 		self.pub_img = rospy.Publisher("duckiebot_patos", Image, queue_size = 1)
 		self.pub_img2 = rospy.Publisher("mascara", Image, queue_size = 1)
-
+	# crear nodo
+		self.pub_dist = rospy.Publisher("distancia", Point, queue_size = 1)
 
 	def procesar_img(self, msg):
 		#Transformar Mensaje a Imagen
@@ -38,10 +39,11 @@ class Template(object):
 		image_out = cv2.cvtColor(image, cv2.COLOR_BGR2HSV) 
 
 		#Definir rangos para la mascara
-				
-                n = 2
+		
+		# n: numero de objetos (patos) detectados		
+                n = 0
 		if n ==0:
-			lower_limit = np.array([25,100,130])
+			lower_limit = np.array([25,80,40])
 			upper_limit =np.array([35,255,255])
 			tamanopato= 3.38
                         
@@ -68,13 +70,36 @@ class Template(object):
 		_,contours, hierarchy = cv2.findContours(img_dilate,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 		for cnt in contours:
                         AREA = cv2.contourArea(cnt)
-			if AREA>300: #Filtrar por tamano de obs
+			if AREA>64: #Filtrar por tamano de obs
 				x,y,w,h = cv2.boundingRect(cnt)
-				dp=(tamanopato*df)/h
+				dp=(tamanopato*df)/h # dp: distancia
 				print(dp)
+
+				# publicar distancia
+				dist = Point() # dp se define como una variable vacia con el formato point
+				# guardar distancia en alguna coordenada, ej: eje x
+				dist.x = dp
+				dist.y = 0
+				dist.z = 0
+
+				# publicar distancia en el nodo definido en el __init__
+				self.pub_dist.publish(dist)				
+
+				print(dist)
+
 				cv2.rectangle(image, (x,y), (x+w,y+h), (0,0,255), 2)
 			else:
-				None
+				nodist = Point()
+				nodist.x = 12345
+				nodist.y = 0
+				nodist.z = 0
+				
+				self.pub_dist.publish(nodist)
+
+				print(nodist)
+			
+			
+			
 
 		# Publicar imagen final
 		msg = bridge.cv2_to_imgmsg(image, "bgr8")

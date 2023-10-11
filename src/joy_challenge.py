@@ -14,12 +14,13 @@ class Template(object):
         #sucribir a joy 
         self.sub = rospy.Subscriber("/duckiebot/joy" , Joy, self.callback)
         #publicar la intrucciones del control en possible_cmd
-        self.publi = rospy.Publisher("/duckiebot/wheels_driver_node/car_cmd", Twist2DStamped, queue_size = 10)
         self.twist = Twist2DStamped()
+        self.publi = rospy.Publisher("/duckiebot/possible_cmd",Twist2DStamped, queue_size = 10) 
 
 
     #def publicar(self, msg):
         #self.publi.publish(msg)
+	
 
     def callback(self,msg):
         a = msg.buttons[0]
